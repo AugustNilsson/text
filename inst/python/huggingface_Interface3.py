@@ -26,7 +26,7 @@ ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answeri
 
 PIPELINE_RESULTS_BY_TASK = {
     "text-classification": ["LABEL_1", "LABEL_0"], 
-    "sentiment-analysis": ["POSITIVE", "NEGATIVE"], 
+    "sentiment-analysis": ["LABEL_1", "LABEL_0"], 
     "question-answering": ["answer"], 
     "translation": ["translation_text"], 
     "summarization": ["summary_text"], 

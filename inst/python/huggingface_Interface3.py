@@ -25,7 +25,7 @@ ACCEPTED_TASKS = ["text-classification", "sentiment-analysis", "question-answeri
     "summarization", "token-classification", "ner", "text-generation", "zero-shot-classification"]
 
 PIPELINE_RESULTS_BY_TASK = {
-    "text-classification": ["POSITIVE", "NEGATIVE"], 
+    "text-classification": ["LABEL_1", "LABEL_0"], 
     "sentiment-analysis": ["POSITIVE", "NEGATIVE"], 
     "question-answering": ["answer"], 
     "translation": ["translation_text"], 

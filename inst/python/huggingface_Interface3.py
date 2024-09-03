@@ -302,7 +302,9 @@ def hgTransformerGetPipeline(text_strings,
         # todo add list of defaults and print the task default in warning
         if not return_incorrect_results:
             task_scores = []
+    print(task_scores)
     return task_scores
+                                
 
 
 def hgTransformerGetTextGeneration(text_strings,

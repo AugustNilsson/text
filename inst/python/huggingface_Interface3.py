@@ -270,7 +270,7 @@ def hgTransformerGetPipeline(text_strings,
         task_scores = task_pipeline(**kwargs)
     else:
         task_scores = task_pipeline(text_strings, **kwargs)
-
+    print(task_scores)
     if len(task_scores) == 0 or (isinstance(task_scores, list) and len(task_scores[0]) == 0):
         return task_scores
     
@@ -302,7 +302,6 @@ def hgTransformerGetPipeline(text_strings,
         # todo add list of defaults and print the task default in warning
         if not return_incorrect_results:
             task_scores = []
-    print(task_scores)
     return task_scores
                                 
 

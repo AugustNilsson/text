@@ -13,20 +13,23 @@ textZeroShot(
   device = "cpu",
   tokenizer_parallelism = FALSE,
   logging_level = "error",
-  return_incorrect_results = FALSE,
+  force_return_results = FALSE,
   set_seed = 202208L
 )
 }
 \arguments{
-\item{sequences}{(string)  The sequence(s) to classify (not that they will be truncated if the model input is too large).}
+\item{sequences}{(string)  The sequence(s) to classify (not that they will be truncated
+if the model input is too large).}
 
-\item{candidate_labels}{(string) The set of class labels that is possible in the to classification of each sequence.
-It may be a single label, a string of comma-separated labels, or a list of labels.}
+\item{candidate_labels}{(string) The set of class labels that is possible in the to
+classification of each sequence. It may be a single label, a string of comma-separated
+labels, or a list of labels.}
 
 \item{hypothesis_template}{(string; optional)
 The template that is used for turning each of the label into an NLI-style hypothesis.
-This template must include a "{}" or similar syntax so that the candidate label can be inserted into the template.
-For example, the default template is "This example is {}." With the candidate label "sports",
+This template must include a "{}" or similar syntax so that the candidate label can be
+inserted into the template. For example, the default template is
+"This example is {}." With the candidate label "sports",
 this would be fed into the model like "<cls> sequence to classify <sep> This example is sports . <sep>".
 The default template works well in many cases, but it may be worthwhile to experiment with different templates
 depending on the task setting (see https://huggingface.co/docs/transformers/).}
@@ -45,7 +48,7 @@ of the entailment score vs. the contradiction score.}
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+\item{force_return_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
 This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive" and "negative").}

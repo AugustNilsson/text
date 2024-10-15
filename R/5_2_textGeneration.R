@@ -1,5 +1,3 @@
-
-
 #' Predicts the words that will follow a specified text prompt. (experimental)
 #' @param x (string)  A variable or a tibble/dataframe with at least one character variable.
 #' @param model (string)  Specification of a pre-trained language model that have been trained with an
@@ -8,13 +6,12 @@
 #' @param tokenizer_parallelism (boolean)  If TRUE this will turn on tokenizer parallelism.
 #' @param logging_level (string)  Set the logging level.
 #' Options (ordered from less logging to more logging): critical, error, warning, info, debug
-#' @param return_incorrect_results (boolean)  Stop returning some incorrectly formatted/structured results.
+#' @param force_return_results (boolean)  Stop returning some incorrectly formatted/structured results.
 #' This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 #' All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 #' dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
 #'  and "negative").
 #' @param return_tensors (boolean)  Whether or not the output should include the prediction tensors (as token indices).
-#' @param return_text (boolean)  Whether or not the outputs should include the decoded text.
 #' @param return_full_text (boolean) If FALSE only the added text is returned, otherwise the full text is returned.
 #'  (This setting is only meaningful if return_text is set to TRUE)
 #' @param clean_up_tokenization_spaces (boolean)  Option to clean up the potential extra spaces in the returned text.
@@ -43,9 +40,8 @@ textGeneration <- function(x,
                            device = "cpu",
                            tokenizer_parallelism = FALSE,
                            logging_level = "warning",
-                           return_incorrect_results = FALSE,
+                           force_return_results = FALSE,
                            return_tensors = FALSE,
-                           return_text = TRUE,
                            return_full_text = TRUE,
                            clean_up_tokenization_spaces = FALSE,
                            prefix = "",
@@ -55,7 +51,6 @@ textGeneration <- function(x,
   # Run python file with HunggingFace interface to state-of-the-art transformers
   reticulate::source_python(system.file("python",
     "huggingface_Interface3.py",
-    # envir = NULL,
     package = "text",
     mustWork = TRUE
   ))
@@ -76,9 +71,8 @@ textGeneration <- function(x,
       device = device,
       tokenizer_parallelism = tokenizer_parallelism,
       logging_level = logging_level,
-      return_incorrect_results = return_incorrect_results,
+      force_return_results = force_return_results,
       return_tensors = return_tensors,
-      return_text = return_text,
       return_full_text = return_full_text,
       clean_up_tokenization_spaces = clean_up_tokenization_spaces,
       prefix = prefix,

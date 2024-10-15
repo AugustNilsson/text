@@ -18,9 +18,10 @@ textrpp_install(
 )
 
 textrpp_install_virtualenv(
-  rpp_version = c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk"),
-  python_path = "/usr/local/bin/python3.9",
+  rpp_version = c("torch==2.0.0", "transformers==4.19.2", "numpy", "pandas", "nltk"),
+  python_path = NULL,
   pip_version = NULL,
+  bin = "python3",
   envname = "textrpp_virtualenv",
   prompt = TRUE
 )
@@ -36,7 +37,8 @@ automatically find the path}
 
 \item{rpp_version}{character; default is "rpp_version_system_specific_defaults", because diffent systems require
 different combinations of python version and packages. It is also possible to
-specify your own, such as c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk", "scikit-learn", "datasets", "evaluate").}
+specify your own, such as c("torch==2.0.0", "transformers==4.19.2", "numpy", "pandas", "nltk", "scikit-learn",
+"datasets", "evaluate").}
 
 \item{python_version}{character; default is "python_version_system_specific_defaults". You can specify your
 Python version for the condaenv yourself.
@@ -48,11 +50,13 @@ Default is "textrpp_condaenv".}
 \item{pip}{\code{TRUE} to use pip for installing rpp If \code{FALSE}, conda
 package manager with conda-forge channel will be used for installing rpp.}
 
-\item{python_path}{character; path to Python in virtualenv installation}
+\item{python_path}{character; path to Python only for virtualenvironment installation}
 
 \item{prompt}{logical; ask whether to proceed during the installation}
 
 \item{pip_version}{character;}
+
+\item{bin}{character; e.g., "python", only for virtualenvironment installation}
 }
 \description{
 Install text required python packages (rpp) in a self-contained environment.
@@ -63,7 +67,7 @@ For macOS and Linux-based systems, this will also install Python itself via a "m
   install one if none exists.
 
   For Windows, automatic installation of miniconda installation is not currently
-  available, so the user will need to
+  available, so the user will need to install
   \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
    (or Anaconda) manually}.
 

@@ -3,7 +3,6 @@
 
 conda_args <- reticulate:::conda_args
 
-
 #' Install text required python packages in conda or virtualenv environment
 #'
 #' @description Install text required python packages (rpp) in a self-contained environment.
@@ -14,7 +13,7 @@ conda_args <- reticulate:::conda_args
 #'   install one if none exists.
 #'
 #'   For Windows, automatic installation of miniconda installation is not currently
-#'   available, so the user will need to
+#'   available, so the user will need to install
 #'   \href{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}{miniconda
 #'    (or Anaconda) manually}.
 #' @param conda character; path to conda executable. Default "auto" which
@@ -26,11 +25,13 @@ conda_args <- reticulate:::conda_args
 #' package manager with conda-forge channel will be used for installing rpp.
 #' @param rpp_version character; default is "rpp_version_system_specific_defaults", because diffent systems require
 #' different combinations of python version and packages. It is also possible to
-#' specify your own, such as c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk", "scikit-learn", "datasets", "evaluate").
+#' specify your own, such as c("torch==2.0.0", "transformers==4.19.2", "numpy", "pandas", "nltk", "scikit-learn",
+#' "datasets", "evaluate").
 #' @param python_version character; default is "python_version_system_specific_defaults". You can specify your
 #' Python version for the condaenv yourself.
 #'   installation.
-#' @param python_path character; path to Python in virtualenv installation
+#' @param python_path character; path to Python only for virtualenvironment installation
+#' @param bin character; e.g., "python", only for virtualenvironment installation
 #' @param envname character; name of the conda-environment to install text required python packages.
 #'   Default is "textrpp_condaenv".
 #' @param prompt logical; ask whether to proceed during the installation
@@ -52,19 +53,54 @@ textrpp_install <- function(conda = "auto",
                             pip = TRUE,
                             python_path = NULL,
                             prompt = TRUE) {
-
   # Set system specific default versions
   if (rpp_version[[1]] == "rpp_version_system_specific_defaults") {
-    if (is_osx() | is_linux()) {
-      rpp_version <- c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk", "scikit-learn", "datasets", "evaluate")
+    if (is_osx() || is_linux()) {
+      rpp_version <- c(
+        "torch==2.2.0",
+        "transformers==4.38.0",
+        "huggingface_hub==0.20.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.8.1",
+        "scikit-learn==1.3.0", # higher versions 1.4 and 1.5 yield errors in textTopics() and warnings in textTrain
+        "datasets==2.16.1",
+        "evaluate==0.4.0",
+        "accelerate==0.26.0",
+        "bertopic==0.16.3",
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.6",
+        "hdbscan==0.8.33",
+        "scipy==1.10.1"
+      )
     }
     if (is_windows()) {
-      rpp_version <- c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk", "scikit-learn", "datasets", "evaluate")
+      rpp_version <- c(
+        "torch==2.2.0",
+        "transformers==4.38.0",
+        "huggingface_hub==0.20.0",
+        "numpy==1.26.0",
+        "pandas==2.0.3",
+        "nltk==3.8.1",
+        "scikit-learn==1.3.0",
+        "datasets==2.16.1",
+        "evaluate==0.4.0",
+        "accelerate==0.26.0",
+        "bertopic==0.16.3",
+        "jsonschema==4.19.2",
+        "sentence-transformers==2.2.2",
+        "flair==0.13.0",
+        "umap-learn==0.5.6",
+        "hdbscan==0.8.33",
+        "scipy==1.10.1"
+      )
     }
   }
 
   if (python_version == "python_version_system_specific_defaults") {
-    if (is_osx() | is_linux()) {
+    if (is_osx() || is_linux()) {
       python_version <- "3.9.0"
     }
 
@@ -85,6 +121,11 @@ textrpp_install <- function(conda = "auto",
       "Binary installation is only available for 64-bit platforms."
     )
   }
+
+  # install rust for singularity machine -- but it gives error in github action
+  # reticulate::py_run_string("import os\nos.system(\"curl --proto '=https' --tlsv1.2 -sSf
+  # https://sh.rustup.rs | sh -s -- -y\")")
+  system("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y")
 
   # resolve and look for conda help(conda_binary)
   conda <- tryCatch(reticulate::conda_binary(conda), error = function(e) NULL)
@@ -111,7 +152,7 @@ textrpp_install <- function(conda = "auto",
     }
 
     # Update mini_conda
-    if (update_conda & force_conda | force_conda) {
+    if (update_conda && force_conda || force_conda) {
       reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
 
@@ -126,7 +167,6 @@ textrpp_install <- function(conda = "auto",
 
     # Windows installation
   } else {
-
     # determine whether we have system python help(py_versions_windows)
     if (python_version == "find_python") {
       python_versions <- reticulate::py_versions_windows()
@@ -143,13 +183,12 @@ textrpp_install <- function(conda = "auto",
 
     # validate that we have conda:
     if (!have_conda) {
-
       # OK adds help(install_miniconda)
       reticulate::install_miniconda(update = update_conda)
       conda <- tryCatch(reticulate::conda_binary("auto"), error = function(e) NULL)
     }
     # Update mini_conda
-    if (have_conda & update_conda | have_conda & force_conda) {
+    if (have_conda && update_conda || have_conda && force_conda) {
       reticulate::install_miniconda(update = update_conda, force = force_conda)
     }
     # process the installation of text required python packages
@@ -215,45 +254,6 @@ process_textrpp_installation_conda <- function(conda,
 }
 
 
-#' @rdname textrpp_install
-#' @description If you wish to install Python in a "virtualenv", use the
-#'   \code{textrpp_install_virtualenv} function. It requires that you have a python version
-#'   and path to it (such as "/usr/local/bin/python3.9" for Mac and Linux.).
-#' @param pip_version character;
-#' @examples
-#' \dontrun{
-#' # install text required python packages in a virtual environment
-#' textrpp_install_virtualenv()
-#' }
-#' @export
-textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0", "transformers==4.19.2", "numpy", "nltk"),
-                                       python_path = "/usr/local/bin/python3.9",
-                                       pip_version = NULL,
-                                       envname = "textrpp_virtualenv",
-                                       prompt = TRUE) {
-
-  # find system python binary
-  python <- if (!is.null(python_path)) python_path else python_unix_binary("python")
-  if (is.null(python)) {
-    stop("Unable to locate Python on this system.", call. = FALSE)
-  }
-
-  process_textrpp_installation_virtualenv(
-    python = python,
-    pip_version = pip_version,
-    rpp_version = rpp_version,
-    envname = envname,
-    prompt = prompt
-  )
-
-
-  message(colourise(
-    "\nInstallation is completed.\n",
-    fg = "blue", bg = NULL
-  ))
-  invisible(NULL)
-}
-
 
 process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/python3.9",
                                                     rpp_version,
@@ -272,7 +272,10 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
   }
 
   # Make python path help(virtualenv_create)
-  reticulate::virtualenv_create(envname, python, pip_version = NULL, required = TRUE)
+  reticulate::virtualenv_create(envname,
+                                python,
+                                pip_version = NULL,
+                                required = TRUE)
 
   reticulate::use_virtualenv(envname, required = TRUE)
 
@@ -287,7 +290,6 @@ process_textrpp_installation_virtualenv <- function(python = "/usr/local/bin/pyt
   ))
 }
 
-
 # Check whether "bin"/something exists in the bin folder
 # For example, bin = "pip3" bin = "python3.9" bin = ".virtualenv"
 # And for example: file.exists("/usr/local/bin/.virtualenvs") /Users/oscarkjell/.virtualenvs
@@ -301,27 +303,53 @@ python_unix_binary <- function(bin) {
   }
 }
 
+#' @rdname textrpp_install
+#' @description If you wish to install Python in a "virtualenv", use the
+#'   \code{textrpp_install_virtualenv} function. It requires that you have a python version
+#'   and path to it (such as "/usr/local/bin/python3.9" for Mac and Linux.).
+#' @param pip_version character;
+#' @examples
+#' \dontrun{
+#' # install text required python packages in a virtual environment
+#' textrpp_install_virtualenv()
+#' }
+#' @export
+textrpp_install_virtualenv <- function(rpp_version = c("torch==2.0.0",
+                                                       "transformers==4.19.2",
+                                                       "numpy",
+                                                       "pandas",
+                                                       "nltk"),
+                                       python_path = NULL, # "/usr/local/bin/python3.9",
+                                       pip_version = NULL,
+                                       bin = "python3",
+                                       envname = "textrpp_virtualenv",
+                                       prompt = TRUE) {
+  # find system python binary
+  if (!is.null(python_path)) {
+    python <- python_path
+    } else {
+      python <-  python_unix_binary(bin = bin)
+    }
 
-python_version_function <- function(python) {
 
-  # check for the version
-  result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)
-
-  # check for error
-  error_status <- attr(result, "status")
-  if (!is.null(error_status)) {
-    stop("Error ", error_status, " occurred while checking for python version", call. = FALSE)
+  if (is.null(python)) {
+    stop("Unable to locate Python on this system.", call. = FALSE)
   }
 
-  # parse out the major and minor version numbers
-  matches <- regexec("^[^ ]+\\s+(\\d+)\\.(\\d+).*$", result)
-  matches <- regmatches(result, matches)[[1]]
-  if (length(matches) != 3) {
-    stop("Unable to parse Python version '", result[[1]], "'", call. = FALSE)
-  }
+  process_textrpp_installation_virtualenv(
+    python = python,
+    pip_version = pip_version,
+    rpp_version = rpp_version,
+    envname = envname,
+    prompt = prompt
+  )
 
-  # return as R numeric version
-  numeric_version(paste(matches[[2]], matches[[3]], sep = "."))
+
+  message(colourise(
+    "\nInstallation is completed.\n",
+    fg = "blue", bg = NULL
+  ))
+  invisible(NULL)
 }
 
 
@@ -358,76 +386,6 @@ textrpp_uninstall <- function(conda = "auto",
   invisible(NULL)
 }
 
-
-text_install_miniconda <- function() {
-  if (is_osx()) {
-    message("Downloading installation script")
-    system(paste(
-      "curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o ~/miniconda.sh;",
-      "echo \"Running installation script\";",
-      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-    ))
-    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bash_profile; rm ~/miniconda.sh')
-    message(colourise(
-      "Installation of miniconda complete",
-      fg = "green", bg = NULL
-    ))
-  } else if (is_linux()) {
-    message("Downloading installation script")
-    system(paste(
-      "wget -nv https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;",
-      "echo \"Running installation script\";",
-      "bash ~/miniconda.sh -b -p $HOME/miniconda"
-    ))
-    system('echo \'export PATH="$PATH:$HOME/miniconda/bin"\' >> $HOME/.bashrc; rm ~/miniconda.sh')
-    message(colourise(
-      "Installation of miniconda complete",
-      fg = "green", bg = NULL
-    ))
-  } else {
-    stop("miniconda installation is available only for Mac or Linux")
-  }
-}
-
-
-pip_get_version <- function(cmd, major_version) {
-  regex <- "^(\\S+)\\s?(.*)$"
-  cmd1 <- sub(regex, "\\1", cmd)
-  cmd2 <- sub(regex, "\\2", cmd)
-  oldw <- getOption("warn")
-  options(warn = -1)
-  result <- paste(system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE),
-    collapse = " "
-  )
-  options(warn = oldw)
-  version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
-  return(sub(version_check_regex, "\\1", result))
-}
-
-
-conda_get_version <- function(major_version = NA, conda, envname) {
-  condaenv_bin <- function(bin) path.expand(file.path(dirname(conda), bin))
-  cmd <- sprintf(
-    "%s%s %s && conda search torch -c conda-forge%s",
-    ifelse(is_windows(), "", ifelse(is_osx(), "source ", "/bin/bash -c \"source ")),
-    shQuote(path.expand(condaenv_bin("activate"))),
-    envname,
-    ifelse(is_windows(), "", ifelse(is_osx(), "", "\""))
-  )
-  regex <- "^(\\S+)\\s?(.*)$"
-  cmd1 <- sub(regex, "\\1", cmd)
-  cmd2 <- sub(regex, "\\2", cmd)
-
-  result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
-  result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
-  if (!is.na(major_version)) {
-    result <- grep(paste0("^", major_version, "\\."), result, value = T)
-  }
-  #
-  return(result[length(result)])
-}
-
-
 ###### see utils.R in spacyr
 # checking OS functions, thanks to r-tensorflow;
 
@@ -447,11 +405,71 @@ is_linux <- function() {
   identical(tolower(Sys.info()[["sysname"]]), "linux")
 }
 
-is_ubuntu <- function() {
-  if (is_unix() && file.exists("/etc/lsb-release")) {
-    lsbrelease <- readLines("/etc/lsb-release")
-    any(grepl("Ubuntu", lsbrelease))
-  } else {
-    FALSE
-  }
-}
+#is_ubuntu <- function() {
+#  if (is_unix() && file.exists("/etc/lsb-release")) {
+#    lsbrelease <- readLines("/etc/lsb-release")
+#    any(grepl("Ubuntu", lsbrelease))
+#  } else {
+#    FALSE
+#  }
+#}
+
+#python_version_function <- function(python) {
+#  # check for the version
+#  result <- system2(python, "--version", stdout = TRUE, stderr = TRUE)
+#
+#  # check for error
+#  error_status <- attr(result, "status")
+#  if (!is.null(error_status)) {
+#    stop("Error ", error_status, " occurred while checking for python version", call. = FALSE)
+#  }
+#
+#  # parse out the major and minor version numbers
+#  matches <- regexec("^[^ ]+\\s+(\\d+)\\.(\\d+).*$", result)
+#  matches <- regmatches(result, matches)[[1]]
+#  if (length(matches) != 3) {
+#    stop("Unable to parse Python version '", result[[1]], "'", call. = FALSE)
+#  }
+#
+#  # return as R numeric version
+#  numeric_version(paste(matches[[2]], matches[[3]], sep = "."))
+#}
+
+#pip_get_version <- function(cmd, major_version) {
+#  regex <- "^(\\S+)\\s?(.*)$"
+#  cmd1 <- sub(regex, "\\1", cmd)
+#  cmd2 <- sub(regex, "\\2", cmd)
+#  oldw <- getOption("warn")
+#  options(warn = -1)
+#  result <- paste(system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE),
+#    collapse = " "
+#  )
+#  options(warn = oldw)
+#  version_check_regex <- sprintf(".+(%s.\\d+\\.\\d+).+", major_version)
+#  return(sub(version_check_regex, "\\1", result))
+#}
+
+
+#conda_get_version <- function(major_version = NA, conda, envname) {
+#  condaenv_bin <- function(bin) path.expand(file.path(dirname(conda), bin))
+#  cmd <- sprintf(
+#    "%s%s %s && conda search torch -c conda-forge%s",
+#    ifelse(is_windows(), "", ifelse(is_osx(), "source ", "/bin/bash -c \"source ")),
+#    shQuote(path.expand(condaenv_bin("activate"))),
+#    envname,
+#    ifelse(is_windows(), "", ifelse(is_osx(), "", "\""))
+#  )
+#  regex <- "^(\\S+)\\s?(.*)$"
+#  cmd1 <- sub(regex, "\\1", cmd)
+#  cmd2 <- sub(regex, "\\2", cmd)
+#
+#  result <- system2(cmd1, cmd2, stdout = TRUE, stderr = TRUE)
+#  result <- sub("\\S+\\s+(\\S+)\\s.+", "\\1", result)
+#  if (!is.na(major_version)) {
+#    result <- grep(paste0("^", major_version, "\\."), result, value = TRUE)
+#  }
+#  #
+#  return(result[length(result)])
+#}
+
+

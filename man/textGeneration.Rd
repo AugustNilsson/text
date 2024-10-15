@@ -10,9 +10,8 @@ textGeneration(
   device = "cpu",
   tokenizer_parallelism = FALSE,
   logging_level = "warning",
-  return_incorrect_results = FALSE,
+  force_return_results = FALSE,
   return_tensors = FALSE,
-  return_text = TRUE,
   return_full_text = TRUE,
   clean_up_tokenization_spaces = FALSE,
   prefix = "",
@@ -33,15 +32,13 @@ autoregressive language modeling objective, which includes the uni-directional m
 \item{logging_level}{(string)  Set the logging level.
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
 
-\item{return_incorrect_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
+\item{force_return_results}{(boolean)  Stop returning some incorrectly formatted/structured results.
 This setting does CANOT evaluate the actual results (whether or not they make sense, exist, etc.).
 All it does is to ensure the returned results are formatted correctly (e.g., does the question-answering
 dictionary contain the key "answer", is sentiments from textClassify containing the labels "positive"
  and "negative").}
 
 \item{return_tensors}{(boolean)  Whether or not the output should include the prediction tensors (as token indices).}
-
-\item{return_text}{(boolean)  Whether or not the outputs should include the decoded text.}
 
 \item{return_full_text}{(boolean) If FALSE only the added text is returned, otherwise the full text is returned.
 (This setting is only meaningful if return_text is set to TRUE)}

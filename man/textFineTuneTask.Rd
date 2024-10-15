@@ -2,7 +2,7 @@
 % Please edit documentation in R/6_1_textFineTune.R
 \name{textFineTuneTask}
 \alias{textFineTuneTask}
-\title{Task Adapted Pre-Training (experimental)}
+\title{Task Adapted Pre-Training (EXPERIMENTAL - under development)}
 \usage{
 textFineTuneTask(
   text_outcome_data,
@@ -20,6 +20,8 @@ textFineTuneTask(
   past_index = -1,
   set_seed = 2022,
   label_names = NULL,
+  pytorch_mps_high_watermark_ratio = FALSE,
+  tokenizer_parallelism = FALSE,
   ...
 )
 }
@@ -57,13 +59,21 @@ before being moved to the CPU (faster but requires more memory).}
 \item{num_train_epochs}{(Numeric) Total number of training epochs to perform
 (if not an integer, will perform the decimal part percents of the last epoch before stopping training).}
 
-\item{past_index}{(Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of the past hidden states
-for their predictions. If this argument is set to a positive int, the Trainer will use the corresponding output
-(usually index 2) as the past state and feed it to the model at the next training step under the keyword argument mems.}
+\item{past_index}{(Numeric, defaults to -1) Some models like TransformerXL or XLNet can make use of
+the past hidden states for their predictions. If this argument is set to a positive int, the Trainer
+will use the corresponding output (usually index 2) as the past state and feed it to the model at
+the next training step under the keyword argument mems.}
 
 \item{set_seed}{(Numeric) Set the seed}
 
-\item{label_names}{label name in case of classification.}
+\item{label_names}{label name in case of classification; e.g., label_names = c("female", "male").}
+
+\item{pytorch_mps_high_watermark_ratio}{Set to TRUE to solve error
+RuntimeError: MPS backend out of memory.Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for
+memory allocations (may cause system failure). Monitor System Resources: If you decide to adjust this setting,
+closely monitor your system's resource usage to ensure it does not become unstable.}
+
+\item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
 \item{...}{Parameters related to the fine tuning, which can be seen in the text-package file inst/python/arg2.json.}
 }
@@ -72,11 +82,13 @@ A folder containing the pretrained model and output data. The model can then be 
 textEmbed() by providing the model parameter with a the path to the output folder.
 }
 \description{
-Task Adapted Pre-Training (experimental)
+Task Adapted Pre-Training (EXPERIMENTAL - under development)
 }
 \details{
-Information about more parameters see inst/python/args2.json (https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
-Descriptions of settings can be found in inst/python/task_finetune.py under "class ModelArguments" and "class DataTrainingArguments" as well as
+Information about more parameters see inst/python/args2.json
+(https://github.com/OscarKjell/text/tree/master/inst/python/args2.json).
+Descriptions of settings can be found in inst/python/task_finetune.py under
+"class ModelArguments" and "class DataTrainingArguments" as well as
 online at https://huggingface.co/docs/transformers/main_classes/trainer.
 }
 \examples{

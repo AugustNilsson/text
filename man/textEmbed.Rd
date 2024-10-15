@@ -19,8 +19,11 @@ textEmbed(
   model_max_length = NULL,
   max_token_to_sentence = 4,
   tokenizer_parallelism = FALSE,
-  device = "gpu",
-  logging_level = "error"
+  device = "cpu",
+  hg_gated = FALSE,
+  hg_token = Sys.getenv("HUGGINGFACE_TOKEN", unset = ""),
+  logging_level = "error",
+  ...
 )
 }
 \arguments{
@@ -41,7 +44,7 @@ to "all". Layer 0 is the decontextualized input layer (i.e., not comprising hidd
  thus should normally not be used. These layers can then be aggregated in the textEmbedLayerAggregation
  function.}
 
-\item{dim_name}{Boolean, if TRUE append the variable name after all variable-names in the output.
+\item{dim_name}{(boolean) If TRUE append the variable name after all variable-names in the output.
 (This differentiates between word embedding dimension names; e.g., Dim1_text_variable_name).
 see \code{\link{textDimName}} to change names back and forth.}
 
@@ -49,11 +52,14 @@ see \code{\link{textDimName}} to change names back and forth.}
 contextualized layers (e.g., "mean", "min" or "max, which takes the minimum, maximum or mean, respectively,
 across each column; or "concatenate", which links  together each word embedding layer to one long row.}
 
-\item{aggregation_from_tokens_to_texts}{(string)  Aggregates to the individual text (i.e., the aggregation of
-all tokens/words given to the transformer).}
+\item{aggregation_from_tokens_to_texts}{(string) Method to carry out the aggregation among the word embeddings
+for the words/tokens, including "min", "max" and "mean" which takes the minimum, maximum or mean across each column;
+or "concatenate", which links together each layer of the word embedding to one long row (default = "mean"). If set to NULL, embeddings are not
+aggregated.}
 
 \item{aggregation_from_tokens_to_word_types}{(string) Aggregates to the word type (i.e., the individual words)
-rather than texts.}
+rather than texts. If set to "individually", then duplicate words are not aggregated, (i.e, the context of individual
+is preserved). (default = NULL).}
 
 \item{keep_token_embeddings}{(boolean) Whether to also keep token embeddings when using texts or word
 types aggregation.}
@@ -77,32 +83,55 @@ switching to embedding text sentence by sentence.}
 \item{tokenizer_parallelism}{(boolean) If TRUE this will turn on tokenizer parallelism. Default FALSE.}
 
 \item{device}{Name of device to use: 'cpu', 'gpu', 'gpu:k' or 'mps'/'mps:k' for MacOS, where k is a
-specific device number.}
+specific device number such as 'mps:1'.}
+
+\item{hg_gated}{Set to TRUE if the accessed model is gated.}
+
+\item{hg_token}{The token needed to access the gated model.
+Create a token from the ['Settings' page](https://huggingface.co/settings/tokens) of
+the Hugging Face website. An an environment variable HUGGINGFACE_TOKEN can
+be set to avoid the need to enter the token each time.}
 
 \item{logging_level}{Set the logging level. Default: "warning".
 Options (ordered from less logging to more logging): critical, error, warning, info, debug}
+
+\item{...}{settings from textEmbedRawLayers().}
 }
 \value{
 A tibble with tokens, a column for layer identifier and word embeddings.
-Note that layer 0 is the input embedding to the transformer
+Note that layer 0 is the input embedding to the transformer.
 }
 \description{
 Extract layers and aggregate them to word embeddings, for all character variables in a given dataframe.
 }
 \examples{
-\donttest{
-# word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
-#                             layers = 10:11,
-#                             aggregation_from_layers_to_tokens = "concatenate",
-#                             aggregation_from_tokens_to_texts = "mean",
-#                             aggregation_from_tokens_to_word_types = "mean")
-## Show information about how the embeddings were constructed
-# comment(word_embeddings$texts$satisfactiontexts)
-# comment(word_embeddings$word_types)
-# comment(word_embeddings$tokens$satisfactiontexts)
+# Automatically transforms the characters in the example dataset:
+# Language_based_assessment_data_8 (included in text-package), to embeddings.
+\dontrun{
+word_embeddings <- textEmbed(Language_based_assessment_data_8[1:2, 1:2],
+  layers = 10:11,
+  aggregation_from_layers_to_tokens = "concatenate",
+  aggregation_from_tokens_to_texts = "mean",
+  aggregation_from_tokens_to_word_types = "mean"
+)
+
+# Show information about how the embeddings were constructed.
+comment(word_embeddings$texts$satisfactiontexts)
+comment(word_embeddings$word_types)
+comment(word_embeddings$tokens$satisfactiontexts)
+
+# See how the word embeddings are structured.
+word_embeddings
+
+# Save the word embeddings to avoid having to embed the text again.
+saveRDS(word_embeddings, "word_embeddings.rds")
+
+# Retrieve the saved word embeddings.
+word_embeddings <- readRDS("word_embeddings.rds")
 }
+
 }
 \seealso{
-see \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
-\code{\link{textDimName}}
+See \code{\link{textEmbedLayerAggregation}}, \code{\link{textEmbedRawLayers}} and
+\code{\link{textDimName}}.
 }

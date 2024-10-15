@@ -53,6 +53,7 @@ reference:
 - title: Fine-tuning
   contents:
   - textFineTuneTask
+  - textFineTuneDomain
 - title: Language Analysis Tasks
   contents:
   - textClassify
@@ -68,7 +69,9 @@ reference:
     - textTrainLists
     - textTrainRegression
     - textTrainRandomForest
-- title: Predict from word embeddings
+    - textTrainN
+    - textTrainNPlot
+- title: Predict from word embeddings or text
   contents:
     - textPredict
     - textPredictTest
@@ -86,11 +89,18 @@ reference:
     - textProjection
     - textPlot
     - textProjectionPlot
-    - textWordPrediction
+#    - textWordPrediction
     - textCentrality
     - textCentralityPlot
     - textPCA
     - textPCAPlot
+- title: BERTopic
+  contents:
+    - textTopics
+    - textTopicsTest
+    - textTopicsWordcloud
+    - textTopicsReduce
+    - textTopicsTree
 - title: View or delete downloaded HuggingFace models in R
   contents:
   - textModels
@@ -110,10 +120,12 @@ reference:
     - centrality_data_harmony
     - PC_projections_satisfactionwords_40
 
+
 articles:
 - title: Set-up
   navbar: ~
   contents:
+  - pre_trained_models
   - huggingface_in_r_extended_installation_guide
   - singularity_transformers_container
   - huggingface_in_r_and_computer_capacity

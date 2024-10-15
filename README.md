@@ -25,15 +25,15 @@ HuggingFace using Natural Language Processing and Machine Learning.
 
 The *text*-package has two main objectives:
 
--   First, to serve R-users as a *point solution* for transforming text
-    to state-of-the-art word embeddings that are ready to be used for
-    downstream tasks. The package provides a user-friendly link to
-    language models based on transformers from [Hugging
-    Face](https://huggingface.co/).
+- First, to serve R-users as a *point solution* for transforming text to
+  state-of-the-art word embeddings that are ready to be used for
+  downstream tasks. The package provides a user-friendly link to
+  language models based on transformers from [Hugging
+  Face](https://huggingface.co/).
 
--   Second, to serve as an *end-to-end solution* that provides
-    state-of-the-art AI techniques tailored for social and behavioral
-    scientists.
+- Second, to serve as an *end-to-end solution* that provides
+  state-of-the-art AI techniques tailored for social and behavioral
+  scientists.
 
 <figure>
 <img src="man/figures/modular_end_solution.png" style="width:85.0%"
@@ -49,7 +49,10 @@ hypotheses in social and behavior sciences for both relatively small and
 large datasets. *Text* is continuously tested on Ubuntu, Mac OS and
 Windows using the latest stable R version.
 
-[Tutorial preprint paper](https://psyarxiv.com/293kt/)
+Please reference our tutorial article when using the package: [The
+text-package: An R-package for Analyzing and Visualizing Human Language
+Using Natural Language Processing and Deep
+Learning](https://osf.io/preprints/psyarxiv/293kt/).
 
 ### Short installation guide
 
@@ -112,7 +115,7 @@ multilingual BERT comprises *104 different languages*.
 | ‘roberta-base’                 | [Liu et al. 2019](https://arxiv.org/abs/1907.11692)      | 12     | 768        | English                                                                              |
 | ‘distilbert-base-cased’        | [Sahn et al., 2019](https://arxiv.org/abs/1910.01108)    | 6      | 768        | English                                                                              |
 | ‘bert-base-multilingual-cased’ | [Devlin et al. 2019](https://aclanthology.org/N19-1423/) | 12     | 768        | [104 top languages at Wikipedia](https://meta.wikimedia.org/wiki/List_of_Wikipedias) |
-| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692.pdf)        | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
+| ‘xlm-roberta-large’            | [Liu et al](https://arxiv.org/pdf/1907.11692)            | 24     | 1024       | [100 language](https://huggingface.co/docs/transformers/multilingual)                |
 
 See [HuggingFace](https://huggingface.co/models/) for a more
 comprehensive list of models.

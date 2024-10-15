@@ -2,6 +2,51 @@
 
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# text 1.2.5
+- updating python code, including adding parameters `hg_gated`, `hg_token`, and `trust_remote_code`. 
+- changed parameter name from `return_incorrect_results` to `force_return_results`
+- changed default of `function_to_apply` = NULL instead of "none"; this 
+is to mimic huggingface default.
+- `textWordPrediction` since it is under development and note tested.
+
+# text 1.2.5
+- updating security issues with python packages. 
+- updating the default range of penalties in textTrain() functions. 
+- updating textPredict() functionality
+
+# text 1.2.2
+- Improving `textTrainN()` including `subsets` sampling (new: default change from `random` to `subsets`), `use_same_penalty_mixture` (new:default change from `FALSE` to `TRUE`) and `std_err` (new output).
+- Improving `textTrainPlot()`
+
+# text 1.2.1
+- Improving `textPredict()` functionality. 
+- Implementing experimental features related to `textTopics()`
+
+# text 1.2
+## Functions
+- `textTopics()` trains a BERTopic model with different modules and returns the model, data, and topic_document distributions based on c-td-idf
+- `textTopicsTest()` can perform multiple tests (correlation, t-test, regression) between a BERTopic model from `textTopics()` and data
+- `textTopicsWordcloud()` can plot word clouds of topics tested with `textTopicsTest()`
+- `textTopicsTree()` prints out a tree structure of the hierarchical topic structure
+
+# text 1.1
+## Functions
+- `textEmbed()` is now fully embedding one column at the time; and reducing word_types for each column. This can break some code; and produce different results in plots where word_types are based on several embedded columns.
+- `textTrainN()` and `textTrainNPlot()` evaluates prediction accuracy across number of cases. 
+- `textTrainRegression()` and `textTrainRandomForest` now takes tibble as input in strata. 
+
+
+# text 1.0
+## Function
+- multinomial regression in `textTrainRegression()`
+- `textPredictTest()` can handle `auc`
+- `textEmbed()` is faster (thanks to faster handling of aggregating layers)
+- Added `sort` parameter in `textEmbedRawLayers()`. 
+
+## Bug/unexpected behaviour
+- Tests using training with random forest was updated since outcomes changed when updating from R 4.2 to R 4.3.1. (see test_2_textTrain.R in tests/testthat folder) 
+
 # text 0.9.99.9
 ## Function
 Possibility to use GPU for MacOS M1 and M2 chip using device = "mps" in `textEmbed()`
